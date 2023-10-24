@@ -1,4 +1,15 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# DESCRIPTION FOR IGNORING FILES AND FOLDERS
+# ==========================================
+#
+# The trailing `/*` is significant:
+#
+# The pattern `directory/` excludes a directory named directory and (implicitly) everything under it.
+# With `directory/`, Git will never look at anything under directory, and thus will never apply
+# any of the "un-exclude" patterns to anything under directory.
+#
+# The pattern `directory/*` says nothing about directory itself, so it just excludes everything under directory.
+# With `directory/*`, Git will process the direct contents of directory, giving other patterns a chance
+# to "un-exclude" some bit of the content (!directory/subdirectory/)
 
 # dependencies
 /node_modules
@@ -15,17 +26,38 @@
 # production
 /build
 
-# misc
+# ENV local files
+.env*.local
+
+### macOS
+# General
 .DS_Store
-*.pem
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# local env files
-.env*.local
 
 # vercel
 .vercel
@@ -33,3 +65,58 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Optional eslint cache
+.eslintcache
+
+### Vim template
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+
+### Linux template
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# Gradle:
+.idea/**/gradle.xml
+.idea/**/libraries
+
+# Mongo Explorer plugin:
+.idea/**/mongoSettings.xml
+
+## File-based project format:
+*.iws

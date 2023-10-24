@@ -1,0 +1,9 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto eol=lf
+
+yarn.lock merge=theirs
+
+# Behaviour for images
+*.png   binary
+*.webp  binary
+*.avif  binary

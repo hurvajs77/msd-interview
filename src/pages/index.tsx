@@ -1,11 +1,39 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import { CSSProperties, useMemo } from 'react';
+import Head from 'next/head';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { Button, Col, Row, Space, Typography } from 'antd';
+import { AlignLeftOutlined, DownloadOutlined, FilterOutlined } from '@ant-design/icons';
+import { ChartWrapper } from '@/components/ChartWrapper';
 
-const inter = Inter({ subsets: ['latin'] })
+const titleStyles: CSSProperties = {
+  margin: 0,
+};
 
-export default function Home() {
+const iconStyle: CSSProperties = {
+  color: '#00857c',
+};
+
+const noteCountStyles: CSSProperties = {
+  color: '#9f9f9f',
+};
+
+const chartWrapperStyles: CSSProperties = {
+  marginTop: '24px',
+};
+
+const buttonWrapperStyles: CSSProperties = {
+  textAlign: 'right',
+};
+
+interface CovidData {
+  date: string;
+  value: number;
+}
+
+const HomePage = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const dataLeftSide = useMemo(() => data.splice(0, 6), [data]);
+  const dataRightSide = useMemo(() => data.splice(-6), [data]);
+
   return (
     <>
       <Head>
@@ -14,101 +42,50 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
 
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-        </div>
+      <Row gutter={24} align="middle" justify="space-between">
+        <Col span={12}>
+          <Typography.Title level={3} style={titleStyles}>
+            Page Title
+          </Typography.Title>
+        </Col>
+        <Col span={12} style={buttonWrapperStyles}>
+          <Space direction="horizontal" size="large">
+            <Button>
+              Export to PDF <DownloadOutlined style={iconStyle} />
+            </Button>
+            <Button>
+              Notes&nbsp;<span style={noteCountStyles}>(3)</span>&nbsp;
+              <AlignLeftOutlined style={iconStyle} />
+            </Button>
+            <Button>
+              Filter <FilterOutlined style={iconStyle} />
+            </Button>
+          </Space>
+        </Col>
+      </Row>
 
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+      <Row gutter={24} style={chartWrapperStyles}>
+        <Col span={12}>
+          <ChartWrapper data={dataLeftSide} title="First 6 weeks" commentCount={3} />
+        </Col>
+        <Col span={12}>
+          <ChartWrapper variant="pie" data={dataRightSide} title="Last 6 weeks" commentCount={9} />
+        </Col>
+      </Row>
     </>
-  )
-}
+  );
+};
+
+export default HomePage;
+
+export const getServerSideProps: GetServerSideProps = (async context => {
+  const res = await fetch(
+    'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=nation;areaName=England&structure={"date":"date","value":"newWeeklyNsoDeathsByRegDate"}',
+  );
+  const data = await res.json();
+
+  return { props: { data: data.data } };
+}) satisfies GetServerSideProps<{
+  data: CovidData[];
+}>;
