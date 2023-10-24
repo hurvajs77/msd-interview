@@ -19,7 +19,8 @@
     "lint:tsc": "tsc --noEmit",
     "lint:no-cache": "next lint --no-cache",
     "prettify": "prettier --check --ignore-unknown src/",
-    "prettify:format": "prettier --write --ignore-unknown src/"
+    "prettify:format": "prettier --write --ignore-unknown src/",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
